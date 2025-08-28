@@ -15,7 +15,7 @@ public class ExampleCommand extends BaseSalutationCommand {
 		CommandBuilder builder = new CommandBuilder("test");
 		builder.arg("info", BooleanArgument.bool(), this::runTest);
 		builder.arg("format", StringArgument.text(), this::runTest).popTop(); //PopTop to allow the next sub command to begin.
-		addChild(builder.build());
+		addChildren(builder.build()); //addChildren removes the "test" out of the chain, while addChild contains it.
 	}
 	
 	private static void runTest(CommandContext context) {
