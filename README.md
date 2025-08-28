@@ -13,8 +13,8 @@ public class ExampleCommand extends BaseSalutationCommand {
 		super("example");
 		
 		CommandBuilder builder = new CommandBuilder("test");
-		builder.arg("info", BooleanArgument.bool(), this::runTest);
-		builder.arg("format", StringArgument.text(), this::runTest).popTop(); //PopTop to allow the next sub command to begin.
+		builder.arg("info", BooleanArgument.bool(), ExampleCommand::runTest);
+		builder.arg("format", StringArgument.text(), ExampleCommand::runTest).popTop(); //PopTop to allow the next sub command to begin.
 		addChildren(builder.build()); //addChildren removes the "test" out of the chain, while addChild contains it.
 	}
 	
