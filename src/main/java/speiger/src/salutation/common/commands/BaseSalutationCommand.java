@@ -58,7 +58,7 @@ public abstract class BaseSalutationCommand extends CommandBase {
 			return;
 		}
 		if(node == null) {
-			context.sendFailure(TranslateUtils.translate("commands.salutation.error.command.notfound", "/pregen "+String.join(" ", args)));
+			context.sendFailure(TranslateUtils.translate("commands.salutation.error.command.notfound", "/"+name+" "+String.join(" ", args)));
 			return;
 		}
 		if(node.getCommand() == null) {
