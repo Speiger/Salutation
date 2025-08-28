@@ -1,12 +1,12 @@
 # Salutation
 
 A mod that ports back the command system from 1.19.2 or newer to older minecraft versions.    
-![image](CFimage.png)
+![image](CFImage.png)
 
 It also comes with a Mini Brigardier system which is also compatible with vanilla mc versions.
 
 Here is an example.
-```
+```java
 
 public class ExampleCommand extends BaseSalutationCommand {
 	public ExampleCommand() {
