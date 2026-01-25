@@ -145,7 +145,7 @@ task curseforge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
 	description 'Publishes the mod to Curseforge'
 	apiToken = System.getenv("Curseforge_API_Token")
 		
-	def mainFile = upload(898104, jar)
+	def mainFile = upload(1336558, jar)
     mainFile.releaseType = RELEASE_TYPE
     mainFile.displayName = archivesBaseName.replace(" ", "")+"-"+version
     
