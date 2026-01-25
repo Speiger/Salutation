@@ -5,8 +5,8 @@ import org.apache.logging.log4j.Logger;
 
 import carbonconfiglib.CarbonConfig;
 import carbonconfiglib.config.Config;
-import carbonconfiglib.config.ConfigHandler;
 import carbonconfiglib.config.ConfigEntry.BoolValue;
+import carbonconfiglib.config.ConfigHandler;
 import carbonconfiglib.config.ConfigSection;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;

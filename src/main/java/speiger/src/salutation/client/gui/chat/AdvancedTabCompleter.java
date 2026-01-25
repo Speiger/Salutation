@@ -190,7 +190,9 @@ public abstract class AdvancedTabCompleter extends TabCompleter {
 			currentWord = textField.getText().substring(0, end);
 			int start = getWordIndex(currentWord);
 			if(start == 0) start = 1;
-			currentWord = currentWord.substring(start);
+			if(start <= currentWord.length()) {
+				currentWord = currentWord.substring(start);
+			}
 		}
 		for(int i = 0,m=newCompl.length;i<m;i++) {
 			String value = newCompl[i];

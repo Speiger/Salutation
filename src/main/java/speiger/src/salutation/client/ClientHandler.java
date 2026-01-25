@@ -38,7 +38,7 @@ public class ClientHandler {
 		Minecraft mc = Minecraft.getMinecraft();
 		//TODO Decide if chunk pregen gets a dependency on this.
 		//if not then one of the two need to yield. At the moment it will be salutation.
-		if(Loader.isModLoaded("chunkpregen")) return; 
+		if(Loader.isModLoaded("chunkpregenerator")) return; 
 		boolean disable = Salutation.DISABLE_OVERRIDE.get();
 		if(screen instanceof GuiMainMenu) {
 			if(!replacedChat && !disable) {
