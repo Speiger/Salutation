@@ -8,18 +8,19 @@ import java.util.Map;
 import java.util.UUID;
 
 import carbonconfiglib.CarbonConfig;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Loader;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Loader;
 import speiger.src.salutation.common.commands.args.StringWalker;
 import speiger.src.salutation.common.utils.ChunkPos;
 import speiger.src.salutation.common.utils.TranslateUtils;
@@ -42,15 +43,15 @@ public abstract class BaseSalutationCommand extends CommandBase {
 	}
 	
 	@Override
-	public String getCommandName() {
+	public String getName() {
 		return name;
 	}
 	
 	@Override
-	public abstract String getCommandUsage(ICommandSender sender);
+	public abstract String getUsage(ICommandSender sender);
 	
 	@Override
-	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
+	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		CommandContext context = new CommandContext(sender);
 		CommandNode node = root.findCurrentNode(new StringWalker(args), context);
 		if(context.getException() != null) {
@@ -69,7 +70,7 @@ public abstract class BaseSalutationCommand extends CommandBase {
 	}
 	
 	@Override
-	public List<String> addTabCompletionOptions(ICommandSender sender, String[] args) {
+	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos targetPos) {
 		CommandContext context = new CommandContext(sender);
 		StringWalker walker = new StringWalker(args);
 		walker.capTop();
@@ -93,19 +94,19 @@ public abstract class BaseSalutationCommand extends CommandBase {
 		List<CommandNode> nodes = new ArrayList<>();
 		Map<String, Object> args = new HashMap<>();
 		String argumentId;
-		IChatComponent exception;
+		ITextComponent exception;
 		int argumentIndex;
 		
 		public CommandContext(ICommandSender sender) {
 			this.sender = sender;
 		}
 		
-		public void setException(String argumentId, IChatComponent exception) {
+		public void setException(String argumentId, ITextComponent exception) {
 			this.argumentId = argumentId;
 			this.exception = exception;
 		}
 		
-		public IChatComponent getException() {
+		public ITextComponent getException() {
 			return exception;
 		}
 		
@@ -154,8 +155,8 @@ public abstract class BaseSalutationCommand extends CommandBase {
 			return sender;
 		}
 		
-		public IChatComponent getSenderName() {
-			return sender.func_145748_c_();
+		public ITextComponent getSenderName() {
+			return sender.getDisplayName();
 		}
 		
 		public UUID getSenderId() {
@@ -167,21 +168,21 @@ public abstract class BaseSalutationCommand extends CommandBase {
 		}
 		
 		public int getSenderDimensionId() {
-			return sender.getEntityWorld().provider.dimensionId;
+			return sender.getEntityWorld().provider.getDimension();
 		}
 		
 		public WorldServer getWorld(int dimension) {
-			return FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(dimension);
+			return FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(dimension);
 		}
 		
 		public ChunkPos getSenderPosition() {
-			ChunkCoordinates pos = sender.getPlayerCoordinates();
-			return new ChunkPos(pos.posX, pos.posZ);
+			BlockPos pos = sender.getPosition();
+			return new ChunkPos(pos.getX(), pos.getZ());
 		}
 		
 		public ChunkPos getSpawnPosition() {
-			ChunkCoordinates pos = sender.getEntityWorld().getSpawnPoint();
-			return new ChunkPos(pos.posX, pos.posZ);
+			BlockPos pos = sender.getEntityWorld().getSpawnPoint();
+			return new ChunkPos(pos.getX(), pos.getZ());
 		}
 		
 		public void printException() {
@@ -199,16 +200,16 @@ public abstract class BaseSalutationCommand extends CommandBase {
 			return CarbonConfig.NETWORK.isInstalledOnClient((EntityPlayerMP)sender); 
 		}
 		
-		private void addChatMessage(IChatComponent text) {
-			sender.addChatMessage(isInstalledOnClient() ? text : TranslateUtils.serverTranslate(text));
+		private void addChatMessage(ITextComponent text) {
+			sender.sendMessage(isInstalledOnClient() ? text : TranslateUtils.serverTranslate(text));
 		}
 		
-		public void sendSuccess(IChatComponent text) {
+		public void sendSuccess(ITextComponent text) {
 			addChatMessage(text);
 		}
 		
-		public void sendFailure(IChatComponent text) {
-			addChatMessage(TranslateUtils.applyTextStyle(text.createCopy(), EnumChatFormatting.RED));
+		public void sendFailure(ITextComponent text) {
+			addChatMessage(TranslateUtils.applyTextStyle(text.createCopy(), TextFormatting.RED));
 		}
 	}
 }

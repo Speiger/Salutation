@@ -8,12 +8,12 @@ import carbonconfiglib.config.Config;
 import carbonconfiglib.config.ConfigEntry.BoolValue;
 import carbonconfiglib.config.ConfigHandler;
 import carbonconfiglib.config.ConfigSection;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import speiger.src.salutation.client.ClientHandler;
 
 @Mod(modid = "salutation", version = "1.0.0", name = "Salutation", acceptableRemoteVersions = "*", dependencies = "required-after:carbonconfig")

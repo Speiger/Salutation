@@ -34,7 +34,7 @@ public class ArgumentNode<T> extends CommandNode {
 			if(arg != null) return context.addArgument(name, arg);
 		}
 		catch(CommandException e) {
-			context.setException(name, TranslateUtils.translate(e.getMessage(), e.getErrorOjbects()));
+			context.setException(name, TranslateUtils.translate(e.getMessage(), e.getErrorObjects()));
 		}
 		return false;
 	}

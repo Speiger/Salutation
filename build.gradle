@@ -23,13 +23,13 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath('com.anatawa12.forge:ForgeGradle:1.2-1.1.+') { changing = true }
+        classpath("com.anatawa12.forge:ForgeGradle:2.3-1.0.+") { changing = true }
         classpath group: 'net.darkhax.curseforgegradle', name: 'CurseForgeGradle', version: '1.1.18'
         classpath group: 'com.modrinth.minotaur', name: 'Minotaur', version: '2.+'
     }
 }
 
-apply plugin: 'forge'
+apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: "com.modrinth.minotaur"
@@ -53,8 +53,9 @@ println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty '
 
 
 minecraft {
-    version = "1.7.10-10.13.4.1614-1.7.10"
+    version = "1.12.2-14.23.0.2491"
     runDir = "run"
+    mappings = "snapshot_20170624"
 }
 
 repositories {
@@ -67,7 +68,7 @@ repositories {
 }
 
 dependencies {
-	implementation "curse.maven:carbon-config-898104:5362077"
+	implementation "curse.maven:carbon-config-898104:8018064"
 }
 
 jar {
@@ -83,7 +84,7 @@ jar {
 
         ])
     }
-	finalizedBy("reobf")
+	finalizedBy("reobfJar")
 }
 
 processResources {

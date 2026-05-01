@@ -4,8 +4,8 @@ import java.util.function.Consumer;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiNewChat;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.ITextComponent;
+import speiger.src.salutation.common.utils.TranslateUtils;
 
 public class MultilineChatScreen extends GuiNewChat {
 	
@@ -14,7 +14,7 @@ public class MultilineChatScreen extends GuiNewChat {
 	}
 	
 	@Override
-	public void printChatMessageWithOptionalDeletion(IChatComponent chatComponent, int chatLineId) {
+	public void printChatMessageWithOptionalDeletion(ITextComponent chatComponent, int chatLineId) {
 		if(chatLineId != 0) {
 			super.printChatMessageWithOptionalDeletion(chatComponent, chatLineId);
 			return;
@@ -22,24 +22,23 @@ public class MultilineChatScreen extends GuiNewChat {
 		split(chatComponent, T -> super.printChatMessageWithOptionalDeletion(T, chatLineId));
 	}
 	
-	@SuppressWarnings("unchecked")
-	public static void split(IChatComponent input, Consumer<IChatComponent> output) {
-		IChatComponent currentOutput = new ChatComponentText("");
-		for(IChatComponent component : (Iterable<IChatComponent>)input) {
+	public static void split(ITextComponent input, Consumer<ITextComponent> output) {
+		ITextComponent currentOutput = TranslateUtils.empty();
+		for(ITextComponent component : input) {
 			boolean hasSplit = false;
-			String originalText = component.getUnformattedTextForChat();
+			String originalText = component.getUnformattedComponentText();
 			if("\\n".equals(originalText)) {
 				output.accept(currentOutput);
-				currentOutput = new ChatComponentText("");
+				currentOutput = TranslateUtils.empty();
 			}
 			else {
 				for(String text : originalText.split("\\n")) {
 					if(hasSplit) {
 						output.accept(currentOutput);
-						currentOutput = new ChatComponentText("");
+						currentOutput = TranslateUtils.empty();
 						hasSplit = false;
 					}
-					currentOutput.appendSibling(new ChatComponentText(text).setChatStyle(component.getChatStyle()));
+					currentOutput.appendSibling(TranslateUtils.literal(text).setStyle(component.getStyle()));
 				}
 			}
 		}

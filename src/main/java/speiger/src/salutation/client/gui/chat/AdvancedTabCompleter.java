@@ -10,8 +10,10 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.network.play.client.C14PacketTabComplete;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.network.play.client.CPacketTabComplete;
+import net.minecraft.util.TabCompleter;
+import net.minecraft.util.text.TextFormatting;
+
 
 public abstract class AdvancedTabCompleter extends TabCompleter {
 	private static final Pattern WHITESPACE_PATTERN = Pattern.compile("(\\s+)");
@@ -67,20 +69,20 @@ public abstract class AdvancedTabCompleter extends TabCompleter {
 		int limit = Math.min(completions.size() - offset, 10);
 		if(limit > 0) {
 			String s = textField.getText();
-			int x = Math.min(s.length() <= 0 ? 0 : font.getStringWidth(s.substring(0, Math.max(0, textField.getText().lastIndexOf(" ")) + 1)), textField.getWidth()) + textField.xPosition - 0;
+			int x = Math.min(s.length() <= 0 ? 0 : font.getStringWidth(s.substring(0, Math.max(0, textField.getText().lastIndexOf(" ")) + 1)), textField.getWidth()) + textField.x - 0;
 			int width = 0;
 			for(int i = 0,m=completions.size();i<m;i++) {
 				width = Math.max(width, font.getStringWidth(completions.get(i)));
 			}
-			int baseY = textField.yPosition - (12 * limit) - 3;
+			int baseY = textField.y - (12 * limit) - 3;
 			
 			int index = mouseX >= x && mouseX <= x + width ? ((mouseY - baseY) / 12) : -1;
 			
-			Gui.drawRect(x, baseY, x + width + 5, textField.yPosition - 3, -805306368);
+			Gui.drawRect(x, baseY, x + width + 5, textField.y - 3, -805306368);
 			for(int i = 0;i < limit;i++) {
 				font.drawStringWithShadow(completions.get(i + offset), x + 2, baseY + (i * 12) + 2, i == index || i + offset == completionIdx ? -256 : -5592406);
 			}
-			box.set(x, baseY, width, (textField.yPosition-3) - baseY);
+			box.set(x, baseY, width, (textField.y-3) - baseY);
 		}
 	}
 	
@@ -137,13 +139,13 @@ public abstract class AdvancedTabCompleter extends TabCompleter {
         int end = textField.getCursorPosition();
         String text = this.textField.getText().substring(0, end);
         int start = getWordIndex(text);
-        if(start == 0) start = 1;
+        if(start == 0 && textField.getText().length() > 1 && end >= 1) start = 1;
 		cycle = true;
 		StringBuilder builder = new StringBuilder(textField.getText());
 		builder.replace(start, end, value);
 		value = builder.toString();
 		keepSuggestions = true;
-		textField.setText(EnumChatFormatting.getTextWithoutFormattingCodes(value));
+		textField.setText(TextFormatting.getTextWithoutFormattingCodes(value));
 		textField.setCursorPosition(start + value.length());
 		keepSuggestions = false;
 	}
@@ -158,10 +160,8 @@ public abstract class AdvancedTabCompleter extends TabCompleter {
 		if(prefix.isEmpty()) {
 			prefix = "/";
 		}
-        int i = this.textField.func_146197_a(-1, this.textField.getCursorPosition(), false);
-        String s = textField.getText().substring(i).toLowerCase();
-        net.minecraftforge.client.ClientCommandHandler.instance.autoComplete(prefix, s);
-        Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C14PacketTabComplete(prefix));
+        net.minecraftforge.client.ClientCommandHandler.instance.autoComplete(prefix);
+        Minecraft.getMinecraft().player.connection.sendPacket(new CPacketTabComplete(prefix, this.getTargetBlockPos(), this.hasTargetBlock));
         cycle = false;
 	}
 	

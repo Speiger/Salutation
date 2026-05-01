@@ -1,12 +1,12 @@
 package speiger.src.salutation.common.utils;
 
-import net.minecraft.event.HoverEvent;
-import net.minecraft.event.HoverEvent.Action;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.ChatStyle;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.event.HoverEvent;
+import net.minecraft.util.text.event.HoverEvent.Action;
 import speiger.src.salutation.Salutation;
 
 public class TranslateUtils {
@@ -14,66 +14,61 @@ public class TranslateUtils {
 		return Salutation.FORCE_SERVER_TRANSLATIONS.get();
 	}
 	
-	public static IChatComponent empty() {
-		return new ChatComponentText("");
+	public static ITextComponent empty() {
+		return new TextComponentString("");
 	}
 	
-	public static IChatComponent literal(String text) {
-		return new ChatComponentText(text);
+	public static ITextComponent literal(String text) {
+		return new TextComponentString(text);
 	}
 	
-	public static IChatComponent translate(String text, Object...args) {
-		return forceServerTranslate() ? serverTranslate(new ChatComponentTranslation(text, args)) : new ChatComponentTranslation(text, args);
+	public static ITextComponent translate(String text, Object...args) {
+		return forceServerTranslate() ? serverTranslate(new TextComponentTranslation(text, args)) : new TextComponentTranslation(text, args);
 	}
 	
-	@SuppressWarnings("unchecked")
-	public static Iterable<IChatComponent> iterator(IChatComponent input) {
-		return input;
-	}
-	
-	public static IChatComponent serverTranslate(IChatComponent input) {
-		IChatComponent output = empty();
-		iterator(input).forEach(T -> {
-			output.appendSibling(literal(T.getUnformattedTextForChat()).setChatStyle(validateStyle(T.getChatStyle())));
+	public static ITextComponent serverTranslate(ITextComponent input) {
+		ITextComponent output = empty();
+		input.forEach(T -> {
+			output.appendSibling(literal(T.getUnformattedComponentText()).setStyle(validateStyle(T.getStyle())));
 		});
 		return output;
 	}
 	
-	public static IChatComponent applyTextStyle(IChatComponent text, EnumChatFormatting...formatting) {
-		ChatStyle style = text.getChatStyle();
-		for(EnumChatFormatting format : formatting) {
+	public static ITextComponent applyTextStyle(ITextComponent text, TextFormatting...formatting) {
+		Style style = text.getStyle();
+		for(TextFormatting format : formatting) {
 			if(format.isColor()) {
 				style.setColor(format);
 				continue;
 			}
-			else if(format == EnumChatFormatting.OBFUSCATED) {
+			else if(format == TextFormatting.OBFUSCATED) {
 				style.setObfuscated(true);
 			}
-			else if(format == EnumChatFormatting.BOLD) {
+			else if(format == TextFormatting.BOLD) {
 				style.setBold(true);
 			}
-			else if(format == EnumChatFormatting.STRIKETHROUGH) {
+			else if(format == TextFormatting.STRIKETHROUGH) {
 				style.setStrikethrough(true);
 			}
-			else if(format == EnumChatFormatting.UNDERLINE) {
+			else if(format == TextFormatting.UNDERLINE) {
 				style.setUnderlined(true);
 			}
-			else if(format == EnumChatFormatting.ITALIC) {
+			else if(format == TextFormatting.ITALIC) {
 				style.setItalic(true);
 			}
-			if(format == EnumChatFormatting.RESET) {
-				text.setChatStyle(new ChatStyle());
-				style = text.getChatStyle();
+			if(format == TextFormatting.RESET) {
+				text.setStyle(new Style());
+				style = text.getStyle();
 			}
 		}
 		return text;
 	}
 	
-	private static ChatStyle validateStyle(ChatStyle style) {
-		HoverEvent event = style.getChatHoverEvent();
+	private static Style validateStyle(Style style) {
+		HoverEvent event = style.getHoverEvent();
 		if(event != null) {
-			IChatComponent value = event.getValue();
-			if(value != null) return style.setChatHoverEvent(new HoverEvent(Action.SHOW_TEXT, serverTranslate(value)));
+			ITextComponent value = event.getValue();
+			if(value != null) return style.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, serverTranslate(value)));
 		}
 		return style;
 	}

@@ -1,12 +1,16 @@
 package speiger.src.salutation.client.gui.chat;
 
+import java.io.IOException;
+
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import net.minecraft.client.gui.GuiSleepMP;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.network.play.client.C0BPacketEntityAction;
+import net.minecraft.network.play.client.CPacketEntityAction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 
 public class MPChatScreen extends GuiSleepMP implements ISaluationChat {
 	Completor completer;
@@ -18,17 +22,17 @@ public class MPChatScreen extends GuiSleepMP implements ISaluationChat {
 	}
 	
 	@Override
-	public void func_146406_a(String[] newCompletions) {
+	public void setCompletions(String... newCompletions) {
 		completer.setCompletions(newCompletions);
 	}
 	
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		super.drawScreen(mouseX, mouseY, partialTicks);
-		completer.render(mouseX, mouseY, fontRendererObj);
+		completer.render(mouseX, mouseY, fontRenderer);
 	}
 	
-	public void handleMouseInput() {
+	public void handleMouseInput() throws IOException {
 		int mouseX = Mouse.getEventX() * this.width / this.mc.displayWidth;
 		int mouseY = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
 		int scroll = Mouse.getDWheel() / 120;
@@ -44,13 +48,13 @@ public class MPChatScreen extends GuiSleepMP implements ISaluationChat {
 	}
 	
 	@Override
-	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		if(completer.onClick(mouseX, mouseY)) return;
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 	}
 	
 	@Override
-	protected void keyTyped(char typedChar, int keyCode) {
+	protected void keyTyped(char typedChar, int keyCode) throws IOException {
 		boolean update = false;
 		if(completer.onKeyPress(keyCode)) {
 			return;
@@ -70,10 +74,10 @@ public class MPChatScreen extends GuiSleepMP implements ISaluationChat {
 				this.getSentHistory(1);
 			}
 			else if(keyCode == Keyboard.KEY_PRIOR) {
-				this.mc.ingameGUI.getChatGUI().scroll(this.mc.ingameGUI.getChatGUI().func_146232_i() - 1);
+				this.mc.ingameGUI.getChatGUI().scroll(this.mc.ingameGUI.getChatGUI().getLineCount() - 1);
 			}
 			else if(keyCode == Keyboard.KEY_NEXT) {
-				this.mc.ingameGUI.getChatGUI().scroll(-this.mc.ingameGUI.getChatGUI().func_146232_i() + 1);
+				this.mc.ingameGUI.getChatGUI().scroll(-this.mc.ingameGUI.getChatGUI().getLineCount() + 1);
 			}
 			else {
 				this.inputField.textboxKeyTyped(typedChar, keyCode);
@@ -82,19 +86,24 @@ public class MPChatScreen extends GuiSleepMP implements ISaluationChat {
 		}
 		else {
 			String s = this.inputField.getText().trim();
-			if(!s.isEmpty()) this.func_146403_a(s);
+			if(!s.isEmpty()) this.sendChatMessage(s);
 			this.mc.displayGuiScreen(null);
 		}
 	}
 	
 	private void wakeFromSleep() {
-        NetHandlerPlayClient nethandlerplayclient = this.mc.thePlayer.sendQueue;
-        nethandlerplayclient.addToSendQueue(new C0BPacketEntityAction(this.mc.thePlayer, 3));
+		NetHandlerPlayClient nethandlerplayclient = this.mc.player.connection;
+		nethandlerplayclient.sendPacket(new CPacketEntityAction(this.mc.player, CPacketEntityAction.Action.STOP_SLEEPING));
 	}
 	
 	public static class Completor extends AdvancedTabCompleter {
 		public Completor(GuiTextField textFieldIn) {
 			super(textFieldIn, false);
+		}
+		
+		@Override
+		public BlockPos getTargetBlockPos() {
+			return mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK ? mc.objectMouseOver.getBlockPos() : null;
 		}
 	}
 }
