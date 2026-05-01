@@ -137,7 +137,7 @@ public abstract class AdvancedTabCompleter extends TabCompleter {
         int end = textField.getCursorPosition();
         String text = this.textField.getText().substring(0, end);
         int start = getWordIndex(text);
-        if(start == 0) start = 1;
+        if(start == 0 && textField.getText().length() > 1 && end >= 1) start = 1;
 		cycle = true;
 		StringBuilder builder = new StringBuilder(textField.getText());
 		builder.replace(start, end, value);
